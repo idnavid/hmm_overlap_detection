@@ -5,6 +5,7 @@ import scipy.io.wavfile as wav
 import pylab
 import sys
 import scikits.audiolab
+import os 
 
 sys.path.append('/scratch2/nxs113020/pyknograms/code/tools/pykno')
 from pyknogram_extraction import *
@@ -56,7 +57,9 @@ if __name__=='__main__':
             wav2 = train_list[j]
             base2 = wav2.split('Headset')[0]
             if not(wav1 == wav2) and (base1 == base2):
+                # the following command allows us to directly use a function from this module in bash. 
+                # Note: with this command, we don't need to have a separate bash script to use SGE. 
                 fjobs.write(""". ~/.bashrc; python -c \"import sys; sys.path.append(\'%s\'); import mix_channels; mix_channels.mix_files(\'%s\', \'%s\')\" \n"""%(cwd,wav1,wav2))
     fjobs.close()
-
+    os.system('/home/nxs113020/bin/myJsplit -M 100 -b 3 -q 1 -n mix_ami lists/mix_jobs.txt')
 
